@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101827">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>MEDICARE · Tu cuidado diario</title>
+<style>
+:root{--bg:#f3f6fb;--card:#fff;--ink:#172235;--muted:#718096;--accent:#287c76;--soft:#e4f3f0;--line:#e7edf4;--gold:#f2b84b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px system-ui,-apple-system,Segoe UI,sans-serif;padding-bottom:86px}
+header{background:#101827;color:white;padding:24px 20px 28px;border-radius:0 0 26px 26px}
+.top{display:flex;align-items:center;justify-content:space-between}.brand{font-weight:850;letter-spacing:1.5px;font-size:20px}.sub{color:#c5d1df;font-size:13px;margin-top:5px}
+main{max-width:650px;margin:auto;padding:18px 16px}.hello{font-size:23px;font-weight:800;margin:4px 0}.muted{color:var(--muted)}
+.card{background:var(--card);border-radius:18px;padding:17px;margin:13px 0;box-shadow:0 5px 18px #16243a0b;border:1px solid var(--line)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px}.big{font-size:30px;font-weight:850}.pill{background:var(--soft);color:var(--accent);border-radius:30px;padding:6px 10px;font-size:12px;font-weight:750}
+button{border:0;border-radius:13px;background:var(--accent);color:white;padding:12px 15px;font-weight:750;font-size:14px;cursor:pointer}button.secondary{background:#edf2f7;color:#263448}button.gold{background:#fff2d8;color:#80540b}button.danger{background:#fff0f0;color:#a33}
+input,select,textarea{width:100%;border:1px solid #dce4ed;border-radius:12px;padding:12px;font:inherit;background:white;color:var(--ink);margin:6px 0 12px}
+label{font-size:13px;font-weight:700;color:#4b5b70}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hidden{display:none!important}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:9px 3px calc(9px + env(safe-area-inset-bottom));z-index:5}
+nav button{background:transparent;color:#68778b;padding:8px 10px;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:3px}
+nav button.active{color:var(--accent);background:var(--soft)}.navicon{font-size:19px}
+.med{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}.med:last-child{border:0}.medicon{width:42px;height:42px;background:#edf6f5;border-radius:14px;display:grid;place-items:center;font-size:21px}
+.medinfo{flex:1}.medinfo b{display:block}.medinfo small{color:var(--muted)}
+.progress{height:9px;background:#e8edf3;border-radius:20px;overflow:hidden;margin:10px 0}.progress span{display:block;height:100%;background:var(--accent);width:0}
+.symptom{padding:13px 0;border-bottom:1px solid var(--line)}.symptom:last-child{border:0}
+h2{font-size:19px;margin:5px 0 12px}h3{font-size:16px;margin:12px 0 5px}.notice{background:#fff7e8;border:1px solid #f5dfb4;color:#684c17;padding:12px;border-radius:13px;font-size:13px;line-height:1.45}
+.small{font-size:12px}.empty{text-align:center;padding:25px 10px;color:var(--muted)}
+
+#profileGate{position:fixed;inset:0;background:#101827eF;z-index:20;display:none;align-items:center;justify-content:center;padding:22px}
+#profileGate .gate{background:#fff;border-radius:22px;padding:24px;width:100%;max-width:420px;color:var(--ink)}
+#profileGate .gate h2{font-size:24px;margin:0 0 6px}
+</style>
+</head>
+<body>
+<header><div class="top"><div><div class="brand">✚ MEDICARE</div><div class="sub">Tu cuidado, un día a la vez</div></div><span style="font-size:27px">💚</span></div></header>
+<div id="profileGate"><div class="gate"><div style="font-size:32px;margin-bottom:8px">💚</div><h2>Bienvenido a MEDICARE</h2><p class="muted">¿Cómo te llamas?</p><label for="profileName">Tu nombre</label><input id="profileName" maxlength="35" placeholder="Escribe tu nombre"><button style="width:100%" onclick="saveProfile()">Comenzar</button><p class="muted small">No necesitas correo ni contraseña. Tu nombre se guarda en este dispositivo.</p></div></div>
+<main>
+<section id="home">
+ <div class="hello" id="hello">Hola 👋</div><div class="muted" id="today"></div>
+ <div class="card"><div class="row"><div><div class="muted small">Cumplimiento de hoy</div><div class="big" id="percent">0%</div></div><div style="font-size:35px">🏆</div></div><div class="progress"><span id="bar"></span></div><div class="row"><span class="muted small" id="counts">0 de 0 tomas completadas</span><span class="pill" id="streak">🔥 0 días</span></div></div>
+ <div class="row"><h2>Próximos medicamentos</h2><button onclick="showTab('meds')" class="secondary">Ver todos</button></div>
+ <div class="card" id="todayMeds"></div>
+ <div class="card"><div class="row"><div><b>Tu motivación</b><div class="muted small">Cada hábito cuenta.</div></div><div class="big">⭐ <span id="points">0</span></div></div></div>
+</section>
+<section id="meds" class="hidden">
+ <div class="row"><h2>Mis medicamentos</h2><button onclick="openMedForm()">＋ Agregar</button></div>
+ <div class="card" id="medList"></div>
+ <div class="notice">Registra únicamente las indicaciones que te haya dado un profesional de salud. MEDICARE no calcula dosis ni modifica tratamientos.</div>
+ <div id="medForm" class="card hidden">
+  <h2 id="formTitle">Nuevo medicamento</h2>
+  <label>Nombre</label><input id="medName" placeholder="Ej. Medicamento indicado">
+  <label>Hora</label><input id="medTime" type="time" value="08:00">
+  <label>Frecuencia</label><select id="medFreq"><option value="Diario">Diario</option><option value="Lunes a viernes">Lunes a viernes</option><option value="Solo recordatorio único">Solo recordatorio único</option></select>
+  <label>Nota (opcional)</label><input id="medNote" placeholder="Ej. Según receta médica">
+  <div class="row"><button class="secondary" onclick="closeMedForm()">Cancelar</button><button onclick="saveMed()">Guardar</button></div>
+ </div>
+</section>
+<section id="health" class="hidden">
+ <h2>Consejos de salud</h2><p class="muted">Busca un síntoma para consultar información general.</p>
+ <input id="searchSymptom" placeholder="🔎 Buscar: fiebre, tos, resfriado..." oninput="renderSymptoms()">
+ <div class="card" id="symptomList"></div>
+ <div class="notice"><b>Importante:</b> esta sección es educativa y no sustituye una valoración médica. Si tienes dificultad para respirar, dolor intenso en el pecho, confusión, labios azulados, convulsiones o empeoramiento rápido, busca atención de urgencia.</div>
+ <div id="symptomDetail" class="card hidden"></div>
+</section>
+<section id="rewards" class="hidden">
+ <h2>Mis recompensas</h2><div class="card"><div class="muted">Puntos acumulados</div><div class="big">⭐ <span id="rewardPoints">0</span></div><p class="muted small">Ganas 10 puntos al marcar una toma como completada.</p></div>
+ <div class="card"><h3>Insignias</h3><div id="badges"></div></div>
+</section>
+<section id="settings" class="hidden">
+ <h2>Ajustes</h2><div class="card"><h3>Notificaciones</h3><p class="muted small">Permite las notificaciones para recibir avisos mientras MEDICARE está abierta. En una web instalada, el navegador puede limitar alarmas programadas cuando la app está cerrada.</p><div class="row"><button onclick="openAlarmSettings()">Permiso de alarmas</button><button class="secondary" onclick="openNotificationSettings()">Notificaciones</button></div><p id="notifStatus" class="muted small">Las alarmas nativas requieren permiso de notificaciones y, cuando Android lo solicita, permiso de alarmas exactas.</p></div>
+ <div class="card"><h3>Sonidos</h3><button class="secondary" onclick="beep()">Probar sonido 🔔</button></div>
+ <div class="card"><h3>Datos</h3><button class="danger" onclick="clearData()">Borrar todos mis datos</button></div>
+ <p class="muted small">Los datos se guardan en este navegador y en este dispositivo. Si borras los datos del navegador, podrías perderlos.</p>
+</section>
+</main>
+<nav>
+<button class="active" data-tab="home" onclick="showTab('home')"><span class="navicon">⌂</span>Inicio</button>
+<button data-tab="meds" onclick="showTab('meds')"><span class="navicon">💊</span>Medicinas</button>
+<button data-tab="health" onclick="showTab('health')"><span class="navicon">♡</span>Consejos</button>
+<button data-tab="rewards" onclick="showTab('rewards')"><span class="navicon">🏆</span>Premios</button>
+<button data-tab="settings" onclick="showTab('settings')"><span class="navicon">⚙</span>Ajustes</button>
+</nav>
+<script>
+const $=id=>document.getElementById(id);
+let meds=JSON.parse(localStorage.getItem('mc_meds')||'[]');
+let taken=JSON.parse(localStorage.getItem('mc_taken')||'{}');
+let points=Number(localStorage.getItem('mc_points')||0), editing=null;
+let profileName=localStorage.getItem('mc_name')||'';
+function saveProfile(){let n=$('profileName').value.trim();if(!n){alert('Escribe tu nombre para continuar.');return}profileName=n;localStorage.setItem('mc_name',n);$('profileGate').style.display='none';render()}
+function openAlarmSettings(){if(window.MedicareNative){MedicareNative.openExactAlarmSettings();$('notifStatus').textContent='Revisa que MEDICARE tenga permitidas las notificaciones y las alarmas. También puedes revisar los permisos desde Ajustes de Android.'}else{enableNotifications()}}
+const symptoms=[
+{n:'Fiebre',k:'temperatura alta calor escalofrios',d:'La fiebre suele ser una respuesta del cuerpo a una infección u otra causa. Descansa, bebe líquidos y evita abrigarte en exceso.',a:['Toma líquidos con frecuencia y descansa.','Usa ropa ligera y mantén la habitación confortable.','Consulta si es persistente, muy alta o se acompaña de síntomas preocupantes.'],w:'Busca atención urgente si hay dificultad para respirar, confusión, convulsiones, rigidez de cuello o signos de deshidratación grave. En bebés menores de 3 meses, una temperatura de 38 °C o más requiere valoración médica inmediata.'},
+{n:'Tos seca',k:'tos irritacion garganta',d:'La tos seca no produce flema y puede aparecer por infecciones virales, irritación o alergias.',a:['Bebe agua y bebidas tibias.','Evita humo, polvo y otros irritantes.','La miel puede aliviar la tos en mayores de 1 año; nunca dar miel a menores de 12 meses.'],w:'Consulta si dura varias semanas, empeora o aparece fiebre persistente, silbidos o falta de aire. Dificultad respiratoria importante es una urgencia.'},
+{n:'Tos con flema',k:'tos productiva mucosidad pecho',d:'La tos con flema ayuda a expulsar mucosidad de las vías respiratorias. El color de la flema por sí solo no confirma una infección bacteriana.',a:['Mantente hidratado.','Evita fumar y exponerte al humo.','No tomes antibióticos sin indicación médica.'],w:'Busca valoración si hay sangre en la flema, dolor de pecho, fiebre persistente o empeoramiento. Si cuesta respirar, busca urgencias.'},
+{n:'Resfriado común',k:'gripe congestion moqueo estornudos',d:'El resfriado suele ser una infección viral de nariz y garganta. Puede causar congestión, estornudos, dolor de garganta y tos.',a:['Descansa y bebe suficientes líquidos.','Los lavados nasales con solución salina pueden ayudar.','Lávate las manos y evita compartir vasos.'],w:'Consulta si los síntomas duran más de lo esperado, empeoran después de mejorar o tienes fiebre persistente. Dificultad respiratoria o dolor de pecho requiere atención urgente.'},
+{n:'Dolor de garganta',k:'garganta irritada tragar',d:'Puede deberse a virus, irritantes u otras causas. La mayoría de los casos leves mejora con cuidados generales.',a:['Bebe líquidos tibios o fríos según te alivien.','Haz gárgaras con agua tibia y sal si puedes hacerlas sin tragar.','Evita humo y ambientes irritantes.'],w:'Busca atención si no puedes tragar saliva, tienes dificultad para respirar, deshidratación o dolor intenso.'},
+{n:'Dolor de cabeza',k:'cefalea migraña',d:'El dolor de cabeza puede tener muchas causas, como tensión, falta de sueño o deshidratación.',a:['Descansa en un lugar tranquilo.','Bebe agua y procura dormir suficiente.','Anota cuándo aparece y qué lo acompaña.'],w:'Un dolor súbito y extremadamente intenso, debilidad de un lado, confusión, desmayo, fiebre con rigidez de cuello o cambios de visión requieren atención urgente.'},
+{n:'Malestar estomacal',k:'estomago nausea diarrea vomito',d:'El malestar digestivo puede tener distintas causas. La prioridad si hay vómito o diarrea es evitar la deshidratación.',a:['Toma pequeños sorbos frecuentes de líquidos.','Come alimentos suaves si los toleras.','Considera suero de rehidratación oral si hay pérdidas de líquidos.'],w:'Busca atención si hay sangre, dolor abdominal intenso, signos de deshidratación, vómitos persistentes o empeoramiento.'},
+{n:'Alergias',k:'estornudos picazon ojos nariz',d:'Las alergias pueden causar estornudos, picazón y ojos llorosos tras exponerse a ciertos desencadenantes.',a:['Reduce el contacto con el desencadenante si lo identificas.','Lávate la cara y cambia la ropa tras exposición a polen.','Consulta si los síntomas son frecuentes o afectan tu vida diaria.'],w:'Hinchazón de lengua o garganta, dificultad para respirar o desmayo pueden indicar una reacción grave: llama a emergencias.'}
+];
+function save(){localStorage.setItem('mc_meds',JSON.stringify(meds));localStorage.setItem('mc_taken',JSON.stringify(taken));localStorage.setItem('mc_points',String(points));}
+function todayKey(){let d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function eligible(m){let day=new Date().getDay();return m.freq==='Diario'||(m.freq==='Lunes a viernes'&&day>=1&&day<=5)||(m.freq==='Solo recordatorio único'&&m.created===todayKey())}
+function dayItems(){return meds.filter(eligible)}
+function isTaken(id){return !!(taken[todayKey()]||{})[id]}
+function entryFor(date,id){return (taken[date]||{})[id]||null}
+function alarmMillis(m,date){let a=date.split('-').map(Number);let t=m.time.split(':').map(Number);return new Date(a[0],a[1]-1,a[2],t[0],t[1],0,0).getTime()}
+function eligibleOn(m,date){let d=new Date(date+'T12:00:00');if(date<m.created)return false;if(date===m.created&&m.createdAt&&alarmMillis(m,date)<Number(m.createdAt))return false;return m.freq==='Diario'||(m.freq==='Lunes a viernes'&&d.getDay()>=1&&d.getDay()<=5)||(m.freq==='Solo recordatorio único'&&m.created===date)}
+function syncNativeEvents(){if(!window.MedicareNative)return;try{let ev=JSON.parse(MedicareNative.getEvents()||'{}'),changed=false;Object.values(ev).forEach(e=>{let dt=new Date(Number(e.alarmAt));let day=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');taken[day] ||= {};if(!taken[day][e.id]){taken[day][e.id]={status:e.status,alarmAt:e.alarmAt,takenAt:e.takenAt};if(e.status==='on_time')points+=10;changed=true}});if(changed)save()}catch(e){}}
+function streakCount(){let count=0,now=Date.now();for(let offset=0;offset<365;offset++){let d=new Date();d.setDate(d.getDate()-offset);let date=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');let due=meds.filter(m=>eligibleOn(m,date));if(!due.length)continue;let complete=due.every(m=>{let e=entryFor(date,m.id);return e&&e.status==='on_time'});if(complete){count++;continue}if(offset===0){let missed=due.some(m=>!entryFor(date,m.id)&&now>alarmMillis(m,date)+10*60*1000);if(!missed)continue}break}return count}
+function showTab(tab){['home','meds','health','rewards','settings'].forEach(t=>$(t).classList.toggle('hidden',t!==tab));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));render()}
+function openMedForm(id=null){editing=id;let m=meds.find(x=>x.id===id);$('formTitle').textContent=m?'Editar medicamento':'Nuevo medicamento';$('medName').value=m?.name||'';$('medTime').value=m?.time||'08:00';$('medFreq').value=m?.freq||'Diario';$('medNote').value=m?.note||'';$('medForm').classList.remove('hidden')}
+function closeMedForm(){$('medForm').classList.add('hidden')}
+function saveMed(){let name=$('medName').value.trim(),time=$('medTime').value;if(!name||!time){alert('Escribe el nombre y la hora.');return}let obj={id:editing||String(Date.now()),name,time,freq:$('medFreq').value,note:$('medNote').value.trim(),created:meds.find(x=>x.id===editing)?.created||todayKey(),createdAt:meds.find(x=>x.id===editing)?.createdAt||Date.now()};if(editing)meds=meds.map(x=>x.id===editing?obj:x);else meds.push(obj);save();if(window.MedicareNative)MedicareNative.scheduleMedication(JSON.stringify(obj));closeMedForm();render();beep()}
+function removeMed(id){if(confirm('¿Eliminar este medicamento?')){meds=meds.filter(m=>m.id!==id);if(window.MedicareNative)MedicareNative.cancelMedication(id);save();render()}}
+function markTaken(id){taken[todayKey()] ||= {};if(taken[todayKey()][id])return;let m=meds.find(x=>x.id===id);if(!m)return;let alarmAt=alarmMillis(m,todayKey()),now=Date.now();if(now<alarmAt){alert('Todavía no llega la hora programada.');return}let status=now<=alarmAt+10*60*1000?'on_time':'late';taken[todayKey()][id]={status,alarmAt,takenAt:now};if(status==='on_time')points+=10;if(window.MedicareNative)MedicareNative.recordTaken(id,alarmAt,now);save();beep();render()}
+function medHTML(m){let e=(taken[todayKey()]||{})[m.id],label=e?(e.status==='on_time'?'✓ A tiempo':'✓ Tarde · sin puntos'):'Ya la tomé';return `<div class="med"><div class="medicon">💊</div><div class="medinfo"><b>${esc(m.name)}</b><small>${m.time} · ${esc(m.freq)} ${m.note?'· '+esc(m.note):''}</small></div><button class="${e?'secondary':''}" onclick="markTaken('${m.id}')" ${e?'disabled':''}>${e?label:'Ya la tomé'}</button></div>`}
+function render(){syncNativeEvents();let items=dayItems(),done=items.filter(m=>isTaken(m.id)).length,pct=items.length?Math.round(done/items.length*100):0;$('hello').textContent='Hola, '+(profileName||'👋');$('today').textContent=new Intl.DateTimeFormat('es-MX',{weekday:'long',day:'numeric',month:'long'}).format(new Date());$('percent').textContent=pct+'%';$('bar').style.width=pct+'%';$('counts').textContent=done+' de '+items.length+' tomas completadas';$('points').textContent=points;$('rewardPoints').textContent=points;$('streak').textContent='🔥 '+streakCount()+' días';$('todayMeds').innerHTML=items.length?items.sort((a,b)=>a.time.localeCompare(b.time)).map(medHTML).join(''):'<div class="empty">Aún no tienes medicamentos programados.<br>Agrega uno en “Medicinas”.</div>';$('medList').innerHTML=meds.length?meds.map(m=>`<div class="med"><div class="medicon">💊</div><div class="medinfo"><b>${esc(m.name)}</b><small>${m.time} · ${esc(m.freq)}</small></div><button class="secondary" onclick="openMedForm('${m.id}')">Editar</button><button class="danger" onclick="removeMed('${m.id}')">✕</button></div>`).join(''):'<div class="empty">Todavía no agregas medicamentos.</div>';$('badges').innerHTML=(points>=10?'🏅 Primer paso · ':'')+(points>=70?'🔥 Constancia semanal · ':'')+(points>=200?'🌟 20 tomas registradas':'')||'Completa tus tomas para desbloquear insignias.';renderSymptoms()}
+function renderSymptoms(){let q=($('searchSymptom')?.value||'').toLowerCase().trim();let list=symptoms.filter(s=>(s.n+' '+s.k).toLowerCase().includes(q));$('symptomList').innerHTML=list.map((s,i)=>`<div class="symptom"><div class="row"><div><b>${s.n}</b><div class="muted small">${s.d}</div></div><button class="secondary" onclick="showSymptom('${s.n}')">Ver consejos</button></div></div>`).join('')||'<div class="empty">No encontramos ese síntoma en la guía.</div>'}
+function showSymptom(n){let s=symptoms.find(x=>x.n===n);$('symptomDetail').classList.remove('hidden');$('symptomDetail').innerHTML=`<h2>${s.n}</h2><p>${s.d}</p><h3>Cuidados generales</h3><ul>${s.a.map(x=>'<li>'+x+'</li>').join('')}</ul><h3>Cuándo buscar ayuda</h3><p>${s.w}</p>`;$('symptomDetail').scrollIntoView({behavior:'smooth',block:'start'})}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function beep(){try{let c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=740;g.gain.value=.06;o.start();o.stop(c.currentTime+.12)}catch(e){}}
+async function enableNotifications(){if(!('Notification'in window)){$('notifStatus').textContent='Este navegador no permite notificaciones.';return}let p=await Notification.requestPermission();$('notifStatus').textContent=p==='granted'?'Notificaciones permitidas. Mantén MEDICARE abierta para comprobar los horarios.':'No se concedió el permiso.';if(p==='granted')new Notification('MEDICARE',{body:'¡Notificaciones activadas!'});}
+function checkReminders(){if(window.MedicareNative)return;if(!('Notification'in window)||Notification.permission!=='granted')return;let now=new Date(),hm=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');dayItems().filter(m=>m.time===hm&&!isTaken(m.id)).forEach(m=>{let k='mc_alert_'+todayKey()+'_'+m.id+'_'+hm;if(!sessionStorage.getItem(k)){new Notification('Hora de tu medicamento',{body:'Recuerda revisar tu indicación: '+m.name,icon:'icon.svg'});sessionStorage.setItem(k,'1');beep()}})}
+setInterval(checkReminders,15000);
+function clearData(){if(confirm('Esto borrará medicamentos, historial y puntos de este dispositivo. ¿Continuar?')){localStorage.removeItem('mc_meds');localStorage.removeItem('mc_taken');localStorage.removeItem('mc_points');meds=[];taken={};points=0;render()}}
+if('serviceWorker'in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+if(!profileName){$('profileGate').style.display='flex'}else{$('profileGate').style.display='none'}
+if(window.MedicareNative){meds.forEach(m=>MedicareNative.scheduleMedication(JSON.stringify(m)));setInterval(()=>{syncNativeEvents();render()},5000)}
+render();
+</script>
+</body></html>
